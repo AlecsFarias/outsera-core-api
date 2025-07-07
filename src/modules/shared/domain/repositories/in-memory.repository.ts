@@ -24,7 +24,7 @@ export abstract class InMemoryRepository<E extends Entity>
 
     if (search) {
       filteredItems = filteredItems.filter((item) =>
-        JSON.stringify(item.toJson).includes(search),
+        JSON.stringify(item.toObject()).includes(search),
       );
     }
 

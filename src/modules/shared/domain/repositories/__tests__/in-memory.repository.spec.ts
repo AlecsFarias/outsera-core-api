@@ -1,11 +1,32 @@
 import { Entity } from '../../entities/entity';
 import { InMemoryRepository } from '../in-memory.repository';
+
 type StubEntityProps = {
   name: string;
   price: number;
 };
 
-class StubEntity extends Entity<StubEntityProps> {}
+class StubEntity extends Entity<StubEntityProps> {
+  get name(): string {
+    return this.props.name;
+  }
+
+  set name(value: string) {
+    this.props.name = value;
+  }
+
+  get price(): number {
+    return this.props.price;
+  }
+
+  set price(value: number) {
+    this.props.price = value;
+  }
+
+  constructor(data: StubEntityProps, id?: string) {
+    super(data, id);
+  }
+}
 
 class StubInMemoryRepository extends InMemoryRepository<StubEntity> {}
 
@@ -83,9 +104,9 @@ describe('InMemoryRepository unit tests', () => {
 
       expect(result.total).toBe(2);
       expect(result.items).toHaveLength(2);
-      expect(
-        result.items.every((item) => item.toJson.name.includes('Product')),
-      ).toBe(true);
+      expect(result.items.every((item) => item.name.includes('Product'))).toBe(
+        true,
+      );
     });
 
     it('should apply pagination', async () => {
@@ -134,8 +155,8 @@ describe('InMemoryRepository unit tests', () => {
 
       const found = await sut.findById(entity.id);
       expect(found).toBe(updatedEntity);
-      expect(found?.toJson.name).toBe('Updated');
-      expect(found?.toJson.price).toBe(200);
+      expect(found?.name).toBe('Updated');
+      expect(found?.price).toBe(200);
     });
 
     it('should not update when entity does not exist', async () => {
@@ -164,8 +185,8 @@ describe('InMemoryRepository unit tests', () => {
       expect(sut['items']).toHaveLength(2);
       const found1 = await sut.findById(entity1.id);
       const found2 = await sut.findById(entity2.id);
-      expect(found1?.toJson.name).toBe('Updated Entity 1');
-      expect(found2?.toJson.name).toBe('Entity 2');
+      expect(found1?.name).toBe('Updated Entity 1');
+      expect(found2?.name).toBe('Entity 2');
     });
   });
 

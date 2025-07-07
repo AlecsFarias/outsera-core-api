@@ -13,7 +13,7 @@ export class Entity<T = any> {
     return this._id;
   }
 
-  get toJson(): T & { id: string } {
+  toObject(): T & { id: string } {
     return {
       ...this.props,
       id: this._id,
