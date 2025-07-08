@@ -1,4 +1,4 @@
-import { Movie, MovieProps } from '../movie.entity';
+import { MovieEntity, MovieProps } from '../movie.entity';
 import { MovieDataBuilder } from '../../testing/helpers/movie-data-builder';
 import { EntityValidationError } from 'src/modules/shared/application/errors/entity-validation-error';
 import { faker } from '@faker-js/faker';
@@ -18,7 +18,7 @@ describe('Movie Entity unit tests', () => {
 
   describe('constructor', () => {
     it('should create a movie with valid data', () => {
-      const movie = new Movie(props);
+      const movie = new MovieEntity(props);
 
       expect(movie.id).toBeDefined();
       expect(movie.title).toBe(props.title);
@@ -29,7 +29,7 @@ describe('Movie Entity unit tests', () => {
     });
 
     it('should create a movie with winner defaulting to false when not provided', () => {
-      const movie = new Movie({ ...props, winner: undefined });
+      const movie = new MovieEntity({ ...props, winner: undefined });
 
       expect(movie.winner).toBe(false);
     });
@@ -37,7 +37,7 @@ describe('Movie Entity unit tests', () => {
     it('should create a movie with custom id', () => {
       const customId = 'custom-id-123';
 
-      const movie = new Movie(props, customId);
+      const movie = new MovieEntity(props, customId);
 
       expect(movie.id).toBe(customId);
     });
@@ -55,7 +55,7 @@ describe('Movie Entity unit tests', () => {
         studios,
       });
 
-      const movie = new Movie(movieData);
+      const movie = new MovieEntity(movieData);
 
       expect(movie.studios).toHaveLength(movieData.studios.length);
       expect(movie.producers).toHaveLength(movieData.producers.length);
@@ -69,7 +69,7 @@ describe('Movie Entity unit tests', () => {
       const invalidData = { ...props };
       delete (invalidData as any).title;
 
-      expect(() => new Movie(invalidData as any)).toThrow(
+      expect(() => new MovieEntity(invalidData as any)).toThrow(
         EntityValidationError,
       );
     });
@@ -80,14 +80,14 @@ describe('Movie Entity unit tests', () => {
         title: 123 as any,
       };
 
-      expect(() => new Movie(invalidData)).toThrow(EntityValidationError);
+      expect(() => new MovieEntity(invalidData)).toThrow(EntityValidationError);
     });
 
     it('should throw EntityValidationError when year is missing', () => {
       const invalidData = { ...props };
       delete (invalidData as any).year;
 
-      expect(() => new Movie(invalidData as any)).toThrow(
+      expect(() => new MovieEntity(invalidData as any)).toThrow(
         EntityValidationError,
       );
     });
@@ -98,14 +98,14 @@ describe('Movie Entity unit tests', () => {
         year: 'invalid-year' as any,
       };
 
-      expect(() => new Movie(invalidData)).toThrow(EntityValidationError);
+      expect(() => new MovieEntity(invalidData)).toThrow(EntityValidationError);
     });
 
     it('should throw EntityValidationError when studios is missing', () => {
       const invalidData = { ...props };
       delete (invalidData as any).studios;
 
-      expect(() => new Movie(invalidData as any)).toThrow(
+      expect(() => new MovieEntity(invalidData as any)).toThrow(
         EntityValidationError,
       );
     });
@@ -116,14 +116,14 @@ describe('Movie Entity unit tests', () => {
         studios: [123, 'Valid Studio'] as any,
       };
 
-      expect(() => new Movie(invalidData)).toThrow(EntityValidationError);
+      expect(() => new MovieEntity(invalidData)).toThrow(EntityValidationError);
     });
 
     it('should throw EntityValidationError when producers is missing', () => {
       const invalidData = { ...props };
       delete (invalidData as any).producers;
 
-      expect(() => new Movie(invalidData as any)).toThrow(
+      expect(() => new MovieEntity(invalidData as any)).toThrow(
         EntityValidationError,
       );
     });
@@ -134,7 +134,7 @@ describe('Movie Entity unit tests', () => {
         producers: [123, 'Valid Producer'] as any,
       };
 
-      expect(() => new Movie(invalidData)).toThrow(EntityValidationError);
+      expect(() => new MovieEntity(invalidData)).toThrow(EntityValidationError);
     });
 
     it('should throw EntityValidationError when winner is not a boolean', () => {
@@ -143,18 +143,18 @@ describe('Movie Entity unit tests', () => {
         winner: 'invalid-boolean' as any,
       };
 
-      expect(() => new Movie(invalidData)).toThrow(EntityValidationError);
+      expect(() => new MovieEntity(invalidData)).toThrow(EntityValidationError);
     });
 
     it('should accept valid winner values', () => {
       const movieDataTrue = { ...props, winner: true };
       const movieDataFalse = { ...props, winner: false };
 
-      expect(() => new Movie(movieDataTrue)).not.toThrow();
-      expect(() => new Movie(movieDataFalse)).not.toThrow();
+      expect(() => new MovieEntity(movieDataTrue)).not.toThrow();
+      expect(() => new MovieEntity(movieDataFalse)).not.toThrow();
 
-      const movieTrue = new Movie(movieDataTrue);
-      const movieFalse = new Movie(movieDataFalse);
+      const movieTrue = new MovieEntity(movieDataTrue);
+      const movieFalse = new MovieEntity(movieDataFalse);
 
       expect(movieTrue.winner).toBe(true);
       expect(movieFalse.winner).toBe(false);
@@ -165,7 +165,7 @@ describe('Movie Entity unit tests', () => {
     it('should return correct OBJ representation', () => {
       const movieData = MovieDataBuilder({});
 
-      const movie = new Movie(movieData);
+      const movie = new MovieEntity(movieData);
       const obj = movie.toObject();
 
       expect(obj).toEqual({
@@ -181,7 +181,7 @@ describe('Movie Entity unit tests', () => {
     it('should include all properties in OBJ', () => {
       const movieData = MovieDataBuilder({});
 
-      const movie = new Movie(movieData);
+      const movie = new MovieEntity(movieData);
       const obj = movie.toObject();
 
       expect(Object.keys(obj)).toEqual([
@@ -199,9 +199,9 @@ describe('Movie Entity unit tests', () => {
     it('should work with generated data from MovieDataBuilder', () => {
       const movieData = MovieDataBuilder({});
 
-      expect(() => new Movie(movieData)).not.toThrow();
+      expect(() => new MovieEntity(movieData)).not.toThrow();
 
-      const movie = new Movie(movieData);
+      const movie = new MovieEntity(movieData);
       expect(movie.id).toBeDefined();
       expect(typeof movie.title).toBe('string');
       expect(typeof movie.year).toBe('number');
@@ -217,7 +217,7 @@ describe('Movie Entity unit tests', () => {
         winner: true,
       };
 
-      const movie = new Movie(movieData);
+      const movie = new MovieEntity(movieData);
 
       expect(movie.title).toBe('Specific Title');
       expect(movie.winner).toBe(true);

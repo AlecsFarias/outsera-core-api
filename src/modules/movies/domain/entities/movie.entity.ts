@@ -12,7 +12,7 @@ export type MovieProps = {
   winner: boolean;
 };
 
-export class Movie extends Entity<MovieProps> {
+export class MovieEntity extends Entity<MovieProps> {
   get year(): number {
     return this.props.year;
   }
@@ -50,7 +50,7 @@ export class Movie extends Entity<MovieProps> {
   }
 
   constructor(data: Optional<MovieProps, 'winner'>, id?: string) {
-    Movie._validate(data);
+    MovieEntity._validate(data);
 
     super(
       {
@@ -61,7 +61,7 @@ export class Movie extends Entity<MovieProps> {
     );
   }
 
-  static _validate(props: ConstructorParameters<typeof Movie>[0]): void {
+  static _validate(props: ConstructorParameters<typeof MovieEntity>[0]): void {
     const validator = MovieValidatorFactory.create();
     const isValid = validator.validate(props);
 
