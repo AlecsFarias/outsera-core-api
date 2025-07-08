@@ -1,12 +1,22 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { MovieFacade } from '../facades/movie.facade';
 import { InternalError } from 'src/modules/shared/application/errors/internal-erro';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import {
   MoviePresenter,
+  MoviesList,
   MovieWrapper,
 } from '../dtos/presenter/movie.presenter';
 import { CreateMovieInput } from '../dtos/input/create-movie.input';
+import { ListInput } from 'src/modules/shared/infra/dtos/inputs/list.input';
 
 @Controller('movies')
 export class MoviesController {
@@ -42,6 +52,20 @@ export class MoviesController {
 
     return {
       movie: MoviePresenter.fromOutput(movie),
+    };
+  }
+
+  @Get()
+  @ApiCreatedResponse({
+    description: 'List all movies and return them',
+    type: MoviesList,
+  })
+  async listMovies(@Query() filters: ListInput): Promise<MoviesList> {
+    const { items, total } = await this.movieFacade.listMovies.execute(filters);
+
+    return {
+      items: items.map((movie) => MoviePresenter.fromOutput(movie)),
+      total,
     };
   }
 }

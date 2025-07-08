@@ -60,7 +60,13 @@ export class MovieWrapper {
 export class MoviesList {
   @ApiProperty({
     description: 'List of movies with Detailed information',
-    type: MoviePresenter,
+    type: [MoviePresenter],
   })
-  movies: MoviePresenter[];
+  items: MoviePresenter[];
+
+  @ApiProperty({
+    description: 'Total number of movies',
+    type: Number,
+  })
+  total: number;
 }
