@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   Post,
@@ -10,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { MovieFacade } from '../facades/movie.facade';
 import { InternalError } from 'src/modules/shared/application/errors/internal-erro';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import {
   MoviePresenter,
   MoviesList,
@@ -88,5 +91,13 @@ export class MoviesController {
     return {
       movie: MoviePresenter.fromOutput(movie),
     };
+  }
+
+  @Delete(':id')
+  @ApiOkResponse({
+    description: 'Delete a movie by ID',
+  })
+  async deleteMovie(@Param('id') id: string): Promise<void> {
+    await this.movieFacade.deleteMovie.execute({ id });
   }
 }

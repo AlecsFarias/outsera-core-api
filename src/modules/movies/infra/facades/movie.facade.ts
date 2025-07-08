@@ -3,6 +3,7 @@ import { CreateMovieUseCase } from '../../application/use-cases/create-movie.use
 import { GetMovieByIdUseCase } from '../../application/use-cases/get-movie-by-id.use-case';
 import { ListMoviesUseCase } from '../../application/use-cases/list-movies.use-case';
 import { UpdateMovieUseCase } from '../../application/use-cases/update-movie.use-case';
+import { DeleteMovieUseCase } from '../../application/use-cases/delete-movie.use-case';
 import { MoviesRepository } from '../../domain/repositories/movies.repository';
 import { Inject } from '@nestjs/common';
 
@@ -11,6 +12,7 @@ export class MovieFacade {
   getMovieById: GetMovieByIdUseCase;
   listMovies: ListMoviesUseCase;
   updateMovie: UpdateMovieUseCase;
+  deleteMovie: DeleteMovieUseCase;
 
   constructor(
     @Inject(MoviesRepository)
@@ -24,5 +26,6 @@ export class MovieFacade {
     this.getMovieById = new GetMovieByIdUseCase(moviesRepository);
     this.listMovies = new ListMoviesUseCase(moviesRepository);
     this.updateMovie = new UpdateMovieUseCase(moviesRepository);
+    this.deleteMovie = new DeleteMovieUseCase(moviesRepository);
   }
 }
