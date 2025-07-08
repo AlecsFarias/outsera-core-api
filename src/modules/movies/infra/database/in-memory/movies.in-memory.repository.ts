@@ -33,10 +33,6 @@ export class MovieInMemoryRepository
       );
     }
 
-    console.log({
-      size: this.items.length,
-    });
-
     const total = filteredItems.length;
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;

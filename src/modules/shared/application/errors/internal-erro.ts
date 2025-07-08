@@ -7,5 +7,9 @@ export class InternalError extends HttpException {
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
     this.name = 'InternalError';
+
+    if (process.env.NODE_ENV == 'production') {
+      console.error('InternalError:', error);
+    }
   }
 }

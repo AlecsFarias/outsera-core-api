@@ -4,7 +4,7 @@ import { MovieProps } from '../entities/movie.entity';
 
 export class MovieRules {
   @IsNumber()
-  year: Date;
+  year: number;
 
   @IsString()
   title: string;
