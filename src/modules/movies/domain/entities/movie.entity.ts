@@ -49,6 +49,10 @@ export class MovieEntity extends Entity<MovieProps> {
     return this.props.winner;
   }
 
+  set winner(value: boolean) {
+    this.props.winner = value;
+  }
+
   constructor(data: Optional<MovieProps, 'winner'>, id?: string) {
     MovieEntity._validate(data);
 

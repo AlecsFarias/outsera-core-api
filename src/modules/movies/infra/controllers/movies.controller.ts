@@ -5,6 +5,7 @@ import {
   Inject,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { MovieFacade } from '../facades/movie.facade';
@@ -16,6 +17,7 @@ import {
   MovieWrapper,
 } from '../dtos/presenter/movie.presenter';
 import { CreateMovieInput } from '../dtos/input/create-movie.input';
+import { UpdateMovieInput } from '../dtos/input/update-movie.input';
 import { ListInput } from 'src/modules/shared/infra/dtos/inputs/list.input';
 
 @Controller('movies')
@@ -66,6 +68,25 @@ export class MoviesController {
     return {
       items: items.map((movie) => MoviePresenter.fromOutput(movie)),
       total,
+    };
+  }
+
+  @Put(':id')
+  @ApiCreatedResponse({
+    description: 'Update a movie by ID and return it',
+    type: MovieWrapper,
+  })
+  async updateMovie(
+    @Param('id') id: string,
+    @Body() body: UpdateMovieInput,
+  ): Promise<MovieWrapper> {
+    const { movie } = await this.movieFacade.updateMovie.execute({
+      id,
+      ...body,
+    });
+
+    return {
+      movie: MoviePresenter.fromOutput(movie),
     };
   }
 }
