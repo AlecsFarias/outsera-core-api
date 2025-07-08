@@ -2,6 +2,7 @@ import { UseCase } from 'src/modules/shared/application/use-case/use-case';
 import { MovieOutput, MovieOutputMapper } from '../outputs/movie.output';
 import { MoviesRepository } from '../../domain/repositories/movies.repository';
 import { MovieEntity } from '../../domain/entities/movie.entity';
+import { InternalError } from 'src/modules/shared/application/errors/internal-erro';
 
 export type CreateMovieUseCaseInput = {
   title: string;
@@ -25,7 +26,11 @@ export class CreateMovieUseCase
   ): Promise<CreateMovieUseCaseOutput> {
     const movie = new MovieEntity(input);
 
-    await this.movieRepository.create(movie);
+    await this.movieRepository.create(movie).catch((err) => {
+      throw new InternalError(
+        `CreateMovieUseCase: Error creating movie: ${err.message}`,
+      );
+    });
 
     return { movie: MovieOutputMapper.toOutput(movie) };
   }
