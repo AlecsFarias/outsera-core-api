@@ -9,7 +9,6 @@ export class ListInput {
     type: String,
     description: 'Search term to filter results',
     required: false,
-    example: 'search term',
   })
   search?: string;
 

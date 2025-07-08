@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { MovieOutput } from 'src/modules/movies/application/outputs/movie.output';
+import {
+  MaxAndMinResponse,
+  ProducerData,
+} from 'src/modules/movies/domain/repositories/movies.repository';
 
 export class MoviePresenter {
   @ApiProperty({
@@ -69,4 +73,60 @@ export class MoviesList {
     type: Number,
   })
   total: number;
+}
+
+export class ProducerIntervalPresenter {
+  @ApiProperty({
+    description: 'Name of the producer',
+    example: 'Joel Silver',
+  })
+  producer: string;
+
+  @ApiProperty({
+    description: 'Interval between consecutive awards',
+    example: 1,
+  })
+  interval: number;
+
+  @ApiProperty({
+    description: 'Year of the previous win',
+    example: 1990,
+  })
+  previousWin: number;
+
+  @ApiProperty({
+    description: 'Year of the following win',
+    example: 1991,
+  })
+  followingWin: number;
+
+  static fromData(data: ProducerData): ProducerIntervalPresenter {
+    return {
+      producer: data.producer,
+      interval: data.interval,
+      previousWin: data.previousWin,
+      followingWin: data.followingWin,
+    };
+  }
+}
+
+export class ProducersAwardIntervalsPresenter {
+  @ApiProperty({
+    description: 'Producers with minimum intervals between consecutive awards',
+    type: [ProducerIntervalPresenter],
+  })
+  min: ProducerIntervalPresenter[];
+
+  @ApiProperty({
+    description: 'Producers with maximum intervals between consecutive awards',
+    type: [ProducerIntervalPresenter],
+  })
+  max: ProducerIntervalPresenter[];
+
+  static fromOutput(data: MaxAndMinResponse): ProducersAwardIntervalsPresenter {
+    return {
+      min: data.min.map((item) => ProducerIntervalPresenter.fromData(item)),
+      max: data.max.map((item) => ProducerIntervalPresenter.fromData(item)),
+    };
+  }
 }

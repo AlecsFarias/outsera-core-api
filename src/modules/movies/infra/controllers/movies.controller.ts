@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Inject,
   Param,
   Post,
@@ -18,6 +16,7 @@ import {
   MoviePresenter,
   MoviesList,
   MovieWrapper,
+  ProducersAwardIntervalsPresenter,
 } from '../dtos/presenter/movie.presenter';
 import { CreateMovieInput } from '../dtos/input/create-movie.input';
 import { UpdateMovieInput } from '../dtos/input/update-movie.input';
@@ -45,6 +44,17 @@ export class MoviesController {
     return {
       movie: MoviePresenter.fromOutput(movie),
     };
+  }
+
+  @Get('analytics/producers-award-intervals')
+  @ApiOkResponse({
+    description:
+      'Get producers with maximum and minimum intervals between consecutive awards',
+    type: ProducersAwardIntervalsPresenter,
+  })
+  async getProducersAwardIntervals(): Promise<ProducersAwardIntervalsPresenter> {
+    const result = await this.movieFacade.getProducersAwardIntervals.execute();
+    return ProducersAwardIntervalsPresenter.fromOutput(result);
   }
 
   @Get(':id')

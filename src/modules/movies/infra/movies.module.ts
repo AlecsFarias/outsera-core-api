@@ -9,7 +9,7 @@ import { MoviesController } from './controllers/movies.controller';
   providers: [
     {
       provide: MoviesRepository,
-      useFactory: () => new MovieInMemoryRepository(),
+      useFactory: () => new MovieInMemoryRepository(true),
     },
     MovieFacade,
   ],

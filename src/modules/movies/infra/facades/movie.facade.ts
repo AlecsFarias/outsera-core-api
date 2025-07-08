@@ -4,6 +4,7 @@ import { GetMovieByIdUseCase } from '../../application/use-cases/get-movie-by-id
 import { ListMoviesUseCase } from '../../application/use-cases/list-movies.use-case';
 import { UpdateMovieUseCase } from '../../application/use-cases/update-movie.use-case';
 import { DeleteMovieUseCase } from '../../application/use-cases/delete-movie.use-case';
+import { GetProducersAwardIntervalsUseCase } from '../../application/use-cases/get-producers-award-intervals.use-case';
 import { MoviesRepository } from '../../domain/repositories/movies.repository';
 import { Inject } from '@nestjs/common';
 
@@ -13,6 +14,7 @@ export class MovieFacade {
   listMovies: ListMoviesUseCase;
   updateMovie: UpdateMovieUseCase;
   deleteMovie: DeleteMovieUseCase;
+  getProducersAwardIntervals: GetProducersAwardIntervalsUseCase;
 
   constructor(
     @Inject(MoviesRepository)
@@ -27,5 +29,8 @@ export class MovieFacade {
     this.listMovies = new ListMoviesUseCase(moviesRepository);
     this.updateMovie = new UpdateMovieUseCase(moviesRepository);
     this.deleteMovie = new DeleteMovieUseCase(moviesRepository);
+    this.getProducersAwardIntervals = new GetProducersAwardIntervalsUseCase(
+      moviesRepository,
+    );
   }
 }
