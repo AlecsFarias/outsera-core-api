@@ -2,6 +2,7 @@ import { MovieEntity } from 'src/modules/movies/domain/entities/movie.entity';
 import {
   MaxAndMinResponse,
   MoviesRepository,
+  ProducerData,
 } from 'src/modules/movies/domain/repositories/movies.repository';
 import { InMemoryRepository } from 'src/modules/shared/domain/repositories/in-memory.repository';
 import {
@@ -47,74 +48,74 @@ export class MovieInMemoryRepository
     // Get only winning movies
     const winningMovies = this.items.filter((movie) => movie.winner);
 
-    // Create a map to track all wins for each producer
-    const producerWins = new Map<string, number[]>();
-
-    // Collect all wins for each producer
-    for (const movie of winningMovies) {
-      for (const producer of movie.producers) {
-        const cleanProducer = producer.trim();
-        if (!producerWins.has(cleanProducer)) {
-          producerWins.set(cleanProducer, []);
-        }
-        producerWins.get(cleanProducer)!.push(movie.year);
-      }
-    }
-
-    // Calculate intervals for producers with multiple wins
-    const producerIntervals: Array<{
-      producer: string;
-      interval: number;
-      previousWin: number;
-      followingWin: number;
-    }> = [];
-
-    for (const [producer, years] of producerWins.entries()) {
-      if (years.length >= 2) {
-        // Sort years to ensure correct order
-        const sortedYears = years.sort((a, b) => a - b);
-
-        // Calculate all consecutive intervals
-        for (let i = 0; i < sortedYears.length - 1; i++) {
-          const previousWin = sortedYears[i];
-          const followingWin = sortedYears[i + 1];
-          const interval = followingWin - previousWin;
-
-          producerIntervals.push({
-            producer,
-            interval,
-            previousWin,
-            followingWin,
-          });
-        }
-      }
-    }
-
-    // If no intervals found, return empty arrays
-    if (producerIntervals.length === 0) {
+    if (winningMovies.length === 0) {
       return {
         min: [],
         max: [],
       };
     }
 
-    // Find min and max intervals
-    const minInterval = Math.min(...producerIntervals.map((p) => p.interval));
-    const maxInterval = Math.max(...producerIntervals.map((p) => p.interval));
+    const buildProducerData = winningMovies.reduce((map, currMovie) => {
+      currMovie.producers.forEach((producer) => {
+        const cleanProducer = producer.trim();
+        let existingProducer = map.get(cleanProducer);
 
-    // Get all producers with min interval
-    const minProducers = producerIntervals.filter(
-      (p) => p.interval === minInterval,
-    );
+        if (!existingProducer) {
+          existingProducer = new Set<number>();
 
-    // Get all producers with max interval
-    const maxProducers = producerIntervals.filter(
-      (p) => p.interval === maxInterval,
-    );
+          map.set(cleanProducer, existingProducer);
+        }
+
+        map.set(cleanProducer, existingProducer.add(currMovie.year));
+      });
+
+      return map;
+    }, new Map<string, Set<number>>());
+
+    let min: ProducerData[] = [];
+    let max: ProducerData[] = [];
+
+    buildProducerData.forEach((years, producer) => {
+      const sortedYears = Array.from(years).sort((a, b) => a - b);
+
+      if (sortedYears.length < 2) {
+        return;
+      }
+
+      sortedYears.forEach((_, index, yearsArray) => {
+        if (index === 0) {
+          //skip first year
+          return;
+        }
+
+        const dif = yearsArray[index] - yearsArray[index - 1];
+
+        const data = {
+          producer,
+          interval: dif,
+          previousWin: yearsArray[index - 1],
+          followingWin: yearsArray[index],
+        };
+
+        //min check
+        if (min.length === 0 || dif < min[0].interval) {
+          min = [data];
+        } else if (dif === min[0].interval) {
+          min.push(data);
+        }
+
+        //max check
+        if (max.length === 0 || dif > max[0].interval) {
+          max = [data];
+        } else if (dif === max[0].interval) {
+          max.push(data);
+        }
+      });
+    });
 
     return {
-      min: minProducers,
-      max: maxProducers,
+      min,
+      max,
     };
   }
 
@@ -144,6 +145,14 @@ export class MovieInMemoryRepository
           continue;
         }
 
+        const producersList = producers
+          .trim()
+          .split(',')
+          .map((p) => p.split(' and '))
+          .flat()
+          .filter(Boolean)
+          .map((p) => p.trim());
+
         // Parse data
         const movieData = {
           year: parseInt(year.trim(), 10),
@@ -152,10 +161,7 @@ export class MovieInMemoryRepository
             .trim()
             .split(',')
             .map((s) => s.trim()),
-          producers: producers
-            .trim()
-            .split(',')
-            .map((p) => p.trim()),
+          producers: producersList,
           winner: winner ? winner.trim().toLowerCase() === 'yes' : false,
         };
 
